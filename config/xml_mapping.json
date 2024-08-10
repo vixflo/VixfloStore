@@ -1,0 +1,26 @@
+{
+    "product": {
+        "name": ["title", "Title", "product_title", "product_name", "name", "data-product_name", "title_name"],
+        "description": ["Content", "Description",  "product_description", "descriere", "description"],
+        "category_id": ["category_id", "id_category"],
+        "multi_categories": ["multi_categories", "categories", "category", "category_name", "product_category", "Categoriideproduse"],
+        "brand_id": ["brand_id", "id_brand"],
+        "video_provider": ["video_provider", "video provider"],
+        "video_link": ["video_link", "video_url",  "link_video", "url_video", "video"],
+        "tags": ["tags", "keywords", "meta_tag", "cuvinte_cheie", "meta_keywords", "taguri"],
+        "unit_price": ["unit_price", "product_price", "Price", "prices", "data-product_price", "Cost", "RRP", "Preț"],
+        "unit": ["unit", "UM",  "unitate_de_masura", "masura"],
+        "slug": ["slug", "slug_product",  "slug_url", "melch", "product_melch", "melch_url"],
+        "current_stock": ["current_stock", "Stoc",  "Stock", "stoc_produs", ""],
+        "est_shipping_days": ["est_shipping_days", "shipping_days",  "shipping", "estimate_shipping", "estimare_transport"],
+        "sku": ["sku", "SKU", "product_sku"],
+        "meta_title": ["meta_title", "meta_name", "titlu", "Title", "product_title", "title_meta", "product_name", "name"],
+        "meta_description": ["meta_description", "ShortDescription",  "meta", "descriere_scurta", ""],
+        "thumbnail_img": ["Imagini", "image", "thumbnail_img", "thumbnail", "thumb_url", "ImageThumb", "Thumbnail"],
+        "photos": ["Imagini", "imagini", "images", "photos", "Imagine"],
+        "creator": ["added_by", "creator", "created_by"],
+        "variant": ["variant"],
+        "company": ["company", "brand"],
+        "lastModifiedBy": ["lastModifiedBy"]
+    }
+}
