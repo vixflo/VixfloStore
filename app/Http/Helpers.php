@@ -47,9 +47,10 @@ use App\Models\SellerPackagePayment;
 use App\Utility\NotificationUtility;
 use App\Http\Resources\V2\CarrierCollection;
 use App\Http\Controllers\AffiliateController;
-use App\Http\Controllers\ClubPointController;
+// use App\Http\Controllers\ClubPointController;
 use App\Http\Controllers\CommissionController;
 use AizPackages\ColorCodeConverter\Services\ColorCodeConverter;
+use App\Http\Controllers\Api\V2\ClubpointController;
 use App\Models\CustomerPackagePayment;
 use App\Models\FlashDealProduct;
 use App\Models\LastViewedProduct;
@@ -226,7 +227,6 @@ if (!function_exists('format_price')) {
             $fomated_price = number_format($price, get_setting('no_of_decimals'), ',', '.');
         }
 
-
         // Minimize the price
         if ($isMinimize) {
             $temp = number_format($price / 1000000000, get_setting('no_of_decimals'), ".", "");
@@ -241,14 +241,14 @@ if (!function_exists('format_price')) {
             }
         }
 
-        if (get_setting('symbol_format') == 1) {
+        if (get_setting('symbol_format') == 4) {
             return currency_symbol() . $fomated_price;
         } else if (get_setting('symbol_format') == 3) {
             return currency_symbol() . ' ' . $fomated_price;
         } else if (get_setting('symbol_format') == 4) {
             return $fomated_price . ' ' . currency_symbol();
         }
-        return $fomated_price . currency_symbol();
+        return $fomated_price . ' ' . currency_symbol();
     }
 }
 
