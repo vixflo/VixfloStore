@@ -8,7 +8,7 @@ use App\Models\Brand;
 use App\Models\User;
 use App\Models\ProductsImport;
 use App\Models\ProductsExport;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use Auth;
 
