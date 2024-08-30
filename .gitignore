@@ -2,6 +2,7 @@
 /bootstrap/compiled.php
 .env.*.php
 .env.php
+/.well-known
 /node_modules
 /public/assets
 /public/storage
