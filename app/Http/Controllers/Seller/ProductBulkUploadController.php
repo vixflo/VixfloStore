@@ -7,7 +7,7 @@ use App\Models\Category;
 use App\Models\Brand;
 use Auth;
 use App\Models\ProductsImport;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Excel;
 
 class ProductBulkUploadController extends Controller
@@ -47,7 +47,7 @@ class ProductBulkUploadController extends Controller
             $import = new ProductsImport;
             Excel::import($import, request()->file('bulk_file'));
         }
-        
+
         return back();
     }
 
