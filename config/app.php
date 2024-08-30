@@ -171,7 +171,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         KingFlamez\Rave\RaveServiceProvider::class,
-        // Barryvdh\DomPDF\ServiceProvider::class,
+        
         /*
          * Package Service Providers...
          */

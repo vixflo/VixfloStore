@@ -8,6 +8,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CompareController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\CustomerPackageController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\Payment\PaykuController;
 use App\Http\Controllers\Payment\PaymobController;
 use App\Http\Controllers\Payment\PaypalController;
 use App\Http\Controllers\Payment\PaystackController;
+use App\Http\Controllers\Payment\RazorpayController;
 use App\Http\Controllers\Payment\SslcommerzController;
 use App\Http\Controllers\Payment\StripeController;
 use App\Http\Controllers\Payment\TapController;
@@ -47,8 +49,6 @@ use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\SizeChartController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductBulkUploadController;
 
 /*
   |--------------------------------------------------------------------------
@@ -378,6 +378,8 @@ Route::resource('shops', ShopController::class)->middleware('handle-demo-login')
 
 Route::get('/instamojo/payment/pay-success', [InstamojoController::class, 'success'])->name('instamojo.success');
 
+Route::post('rozer/payment/pay-success', [RazorpayController::class, 'payment'])->name('payment.rozer');
+
 Route::get('/paystack/payment/callback', [PaystackController::class, 'handleGatewayCallback']);
 Route::get('/paystack/new-callback', [PaystackController::class, 'paystackNewCallback']);
 
@@ -473,4 +475,6 @@ Route::controller(PageController::class)->group(function () {
     //Custom page
     Route::get('/{slug}', 'show_custom_page')->name('custom-pages.show_custom_page');
 });
-
+Route::controller(ContactController::class)->group(function () {
+    Route::post('/contact', 'contact')->name('contact');
+});

@@ -2,24 +2,6 @@
 
 @section('content')
 
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-        @if(session('output'))
-            <pre>{{ session('output') }}</pre>
-        @endif
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-        @if(session('output'))
-            <pre>{{ session('output') }}</pre>
-        @endif
-    </div>
-@endif
-
     <div class="card">
         <div class="card-header">
             <h5 class="mb-0 h6">{{translate('Product Bulk Upload')}}</h5>
@@ -50,13 +32,11 @@
         </div>
     </div>
 
-    {{-- Aici este formularul existent care încămce fișiere xls, xlsx sau csv --}}
     <div class="card">
         <div class="card-header">
             <h5 class="mb-0 h6"><strong>{{translate('Upload Product File')}}</strong></h5>
         </div>
         <div class="card-body">
-
             <form class="form-horizontal" action="{{ route('bulk_product_upload') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group row">
@@ -73,34 +53,7 @@
                     <button type="submit" class="btn btn-info">{{translate('Upload CSV')}}</button>
                 </div>
             </form>
-
         </div>
     </div>
-
-    {{-- Aici am creat formular pentru a încărca conținut XML din url --}}
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0 h6"><strong>{{translate('Upload XML Product File')}}</strong></h5>
-        </div>
-        <div class="card-body">
-
-            <form class="form-horizontal" action="{{ route('import_xml_feed') }}" method="POST">
-                @csrf
-                <div class="form-group row">
-                    <div class="col-sm-9">
-                        <label  for="xml_url" class="form-label">{{translate('Copy and paste the url to import or update the XML feed')}}</label>
-                        <input type="text" name="xml_url" class="form-control" placeholder="Paste the XML URL here" required>
-                    </div>
-                </div>
-                <div class="form-group mb-0">
-                    <button type="submit" class="btn btn-info">{{translate('Import or Update XML Feed')}}</button>
-                </div>
-            </form>
-
-        </div>
-    </div>
-
-{{-- Aici am terminat modificările efectuate --}}
-
 
 @endsection

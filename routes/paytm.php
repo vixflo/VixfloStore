@@ -2,13 +2,11 @@
 
 //Paytm
 
-use App\Http\Controllers\Api\V2\KhaltiController;
-use App\Http\Controllers\Api\V2\PaytmController;
-use App\Http\Controllers\Api\V2\PhonepeController;
-// use App\Http\Controllers\Payment\PaytmController;
+use App\Http\Controllers\Payment\PaytmController;
 use App\Http\Controllers\Payment\ToyyibpayController;
-// use App\Http\Controllers\Payment\KhaltiController;
-// use App\Http\Controllers\Payment\PhonepeController;
+use App\Http\Controllers\Payment\MyfatoorahController;
+use App\Http\Controllers\Payment\KhaltiController;
+use App\Http\Controllers\Payment\PhonepeController;
 
 Route::controller(PaytmController::class)->group(function () {
     Route::get('/paytm/index', 'pay');
@@ -24,11 +22,13 @@ Route::group(['prefix' =>'admin', 'middleware' => ['auth', 'admin']], function()
 });
 
 //Toyyibpay
-// Route::controller(ToyyibpayController::class)->group(function () {
-//     Route::get('toyyibpay-status', 'paymentstatus')->name( 'toyyibpay-status');
-//     Route::post('/toyyibpay-callback', 'callback')->name( 'toyyibpay-callback');
-// });
+Route::controller(ToyyibpayController::class)->group(function () {
+    Route::get('toyyibpay-status', 'paymentstatus')->name( 'toyyibpay-status');
+    Route::post('/toyyibpay-callback', 'callback')->name( 'toyyibpay-callback');
+});
 
+//Myfatoorah START
+Route::get('/myfatoorah/callback', [MyfatoorahController::class,'callback'])->name('myfatoorah.callback');
 
 //Khalti START
 Route::any('/khalti/payment/done', [KhaltiController::class,'paymentDone'])->name('khalti.success');
