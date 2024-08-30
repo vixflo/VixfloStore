@@ -1,0 +1,64 @@
+[1mdiff --git a/app/Http/Controllers/Seller/ProductBulkUploadController.php b/app/Http/Controllers/Seller/ProductBulkUploadController.php[m
+[1mindex 879b361..c4af0f2 100644[m
+[1m--- a/app/Http/Controllers/Seller/ProductBulkUploadController.php[m
+[1m+++ b/app/Http/Controllers/Seller/ProductBulkUploadController.php[m
+[36m@@ -7,7 +7,7 @@[m [muse App\Models\Category;[m
+ use App\Models\Brand;[m
+ use Auth;[m
+ use App\Models\ProductsImport;[m
+[31m-use PDF;[m
+[32m+[m[32muse Barryvdh\DomPDF\Facade\Pdf;[m
+ use Excel;[m
+ [m
+ class ProductBulkUploadController extends Controller[m
+[36m@@ -47,7 +47,7 @@[m [mclass ProductBulkUploadController extends Controller[m
+             $import = new ProductsImport;[m
+             Excel::import($import, request()->file('bulk_file'));[m
+         }[m
+[31m-        [m
+[32m+[m
+         return back();[m
+     }[m
+ [m
+[1mdiff --git a/app/Models/BrandsImport.php b/app/Models/BrandsImport.php[m
+[1mindex 424db8e..9e528ad 100644[m
+[1m--- a/app/Models/BrandsImport.php[m
+[1m+++ b/app/Models/BrandsImport.php[m
+[36m@@ -3,6 +3,7 @@[m
+ namespace App\Models;[m
+ [m
+ use App\Models\Brand;[m
+[32m+[m[32muse App\Traits\PreventDemoModeChanges;[m
+ use Maatwebsite\Excel\Concerns\ToModel;[m
+ use Maatwebsite\Excel\Concerns\WithHeadingRow;[m
+ use Illuminate\Support\Collection;[m
+[36m@@ -29,7 +30,7 @@[m [mclass BrandsImport implements ToCollection, WithHeadingRow, ToModel[m
+         }[m
+ [m
+         flash(translate('Brands imported successfully'))->success();[m
+[31m-        [m
+[32m+[m
+     }[m
+ [m
+     public function model(array $row)[m
+[1mdiff --git a/config/app.php b/config/app.php[m
+[1mindex 6030a7b..82e9a1e 100644[m
+[1m--- a/config/app.php[m
+[1m+++ b/config/app.php[m
+[36m@@ -176,6 +176,8 @@[m [mreturn [[m
+          * Package Service Providers...[m
+          */[m
+ [m
+[32m+[m[32m         Maatwebsite\Excel\ExcelServiceProvider::class,[m
+[32m+[m
+         /*[m
+          * Application Service Providers...[m
+          */[m
+[36m@@ -240,6 +242,7 @@[m [mreturn [[m
+         'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class,[m
+         'Str' => Illuminate\Support\Str::class,[m
+         'Rave' => KingFlamez\Rave\Facades\Rave::class,[m
+[32m+[m[32m        'Excel' => Maatwebsite\Excel\Facades\Excel::class,[m
+     ],[m
+ [m
+ ];[m
