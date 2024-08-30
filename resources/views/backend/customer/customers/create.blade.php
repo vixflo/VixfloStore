@@ -14,7 +14,7 @@
         <div class="card-header">
             <h5 class="mb-0 h6">{{translate('Customer Information')}}</h5>
         </div>
-
+        
         <form action="{{ route('customers.store') }}" method="POST">
             @csrf
             <div class="card-body">
@@ -96,8 +96,8 @@
                         <input type="password" class="form-control" name="password_confirmation" value="{{ old('password_confirmation') }}" placeholder="{{translate('Confirm Password')}}" required>
                     </div>
                 </div> --}}
-
-
+                
+                
                 <div class="form-group mb-3 text-right">
                     <button type="submit" class="btn btn-primary">{{translate('Save')}}</button>
                 </div>
@@ -159,5 +159,5 @@
                 $(el).html('<i>*{{ translate('Use Email Instead') }}</i>');
             }
         }
-    </script>
+    </script> 
 @endsection

@@ -49,7 +49,7 @@ Options -Indexes
 # For more information, read our documentation (https://go.cpanel.net/EA4ModifyINI)
 <IfModule php8_module>
    php_flag display_errors Off
-   php_value max_execution_time 600
+   php_value max_execution_time 6000
    php_value max_input_time 240
    php_value max_input_vars 10000
    php_value memory_limit 1024M
@@ -61,7 +61,7 @@ Options -Indexes
 </IfModule>
 <IfModule lsapi_module>
    php_flag display_errors Off
-   php_value max_execution_time 600
+   php_value max_execution_time 6000
    php_value max_input_time 240
    php_value max_input_vars 10000
    php_value memory_limit 1024M
