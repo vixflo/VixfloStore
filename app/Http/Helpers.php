@@ -47,10 +47,9 @@ use App\Models\SellerPackagePayment;
 use App\Utility\NotificationUtility;
 use App\Http\Resources\V2\CarrierCollection;
 use App\Http\Controllers\AffiliateController;
-// use App\Http\Controllers\ClubPointController;
+use App\Http\Controllers\ClubPointController;
 use App\Http\Controllers\CommissionController;
 use AizPackages\ColorCodeConverter\Services\ColorCodeConverter;
-use App\Http\Controllers\Api\V2\ClubpointController;
 use App\Models\CustomerPackagePayment;
 use App\Models\FlashDealProduct;
 use App\Models\LastViewedProduct;
@@ -226,6 +225,7 @@ if (!function_exists('format_price')) {
         } else {
             $fomated_price = number_format($price, get_setting('no_of_decimals'), ',', '.');
         }
+
 
         // Minimize the price
         if ($isMinimize) {
@@ -1570,8 +1570,11 @@ if (!function_exists('get_slider_images')) {
     function get_slider_images($ids)
     {
         $slider_query = Upload::query();
-        $sliders = $slider_query->whereIn('id', $ids)->get();
-        return $sliders;
+        $sliders = $slider_query->whereIn('id', $ids);
+        foreach ($ids as $id) {
+            $sliders->orderByRaw("id!=?", [$id]);
+        }
+        return $sliders->get();
     }
 }
 

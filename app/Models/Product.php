@@ -9,7 +9,7 @@ use App\Traits\PreventDemoModeChanges;
 class Product extends Model
 {
     use PreventDemoModeChanges;
-
+    
     protected $guarded = ['choice_attributes'];
 
     protected $with = ['product_translations', 'taxes', 'thumbnail'];
@@ -30,7 +30,7 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
-
+    
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'product_categories');
@@ -115,7 +115,7 @@ class Product extends Model
     {
         return $this->hasMany(Cart::class);
     }
-
+    
     public function scopeIsApprovedPublished($query)
     {
         return $query->where('approved', '1')->where('published', 1);

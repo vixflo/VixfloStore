@@ -9015,6 +9015,8 @@ namespace Illuminate\Support\Facades {
             /**
      * 
      *
+     * @method static string|null getContentTypeFormat()
+     * @method static \Symfony\Component\HttpFoundation\InputBag getPayload()
      * @see \Illuminate\Http\Request
      */        class Request {
                     /**
@@ -9357,12 +9359,12 @@ namespace Illuminate\Support\Facades {
          * Clones a request and overrides some of its parameters.
          *
          * @return static 
-         * @param array|null $query The GET parameters
-         * @param array|null $request The POST parameters
-         * @param array|null $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
-         * @param array|null $cookies The COOKIE parameters
-         * @param array|null $files The FILES parameters
-         * @param array|null $server The SERVER parameters
+         * @param array $query The GET parameters
+         * @param array $request The POST parameters
+         * @param array $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
+         * @param array $cookies The COOKIE parameters
+         * @param array $files The FILES parameters
+         * @param array $server The SERVER parameters
          * @static 
          */        public static function duplicate($query = null, $request = null, $attributes = null, $cookies = null, $files = null, $server = null)
         {
@@ -9386,7 +9388,6 @@ namespace Illuminate\Support\Facades {
                     /**
          * Gets the Session.
          *
-         * @throws SessionNotFoundException When session is not set properly
          * @static 
          */        public static function getSession()
         {
@@ -9591,12 +9592,11 @@ namespace Illuminate\Support\Facades {
          * @param array $files The FILES parameters
          * @param array $server The SERVER parameters
          * @param string|resource|null $content The raw body data
-         * @return void 
          * @static 
          */        public static function initialize($query = [], $request = [], $attributes = [], $cookies = [], $files = [], $server = [], $content = null)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
                         /** @var \Illuminate\Http\Request $instance */
-                        $instance->initialize($query, $request, $attributes, $cookies, $files, $server, $content);
+                        return $instance->initialize($query, $request, $attributes, $cookies, $files, $server, $content);
         }
                     /**
          * Creates a new request with values from PHP's super globals.
@@ -9631,11 +9631,10 @@ namespace Illuminate\Support\Facades {
          * to keep BC with an existing system. It should not be used for any
          * other purpose.
          *
-         * @return void 
          * @static 
          */        public static function setFactory($callable)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
-                        \Illuminate\Http\Request::setFactory($callable);
+                        return \Illuminate\Http\Request::setFactory($callable);
         }
                     /**
          * Overrides the PHP global variables according to this request instance.
@@ -9643,12 +9642,11 @@ namespace Illuminate\Support\Facades {
          * It overrides $_GET, $_POST, $_REQUEST, $_SERVER, $_COOKIE.
          * $_FILES is never overridden, see rfc1867
          *
-         * @return void 
          * @static 
          */        public static function overrideGlobals()
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
                         /** @var \Illuminate\Http\Request $instance */
-                        $instance->overrideGlobals();
+                        return $instance->overrideGlobals();
         }
                     /**
          * Sets a list of trusted proxies.
@@ -9657,16 +9655,14 @@ namespace Illuminate\Support\Facades {
          *
          * @param array $proxies A list of trusted proxies, the string 'REMOTE_ADDR' will be replaced with $_SERVER['REMOTE_ADDR']
          * @param int $trustedHeaderSet A bit field of Request::HEADER_*, to set which headers to trust from your proxies
-         * @return void 
          * @static 
          */        public static function setTrustedProxies($proxies, $trustedHeaderSet)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
-                        \Illuminate\Http\Request::setTrustedProxies($proxies, $trustedHeaderSet);
+                        return \Illuminate\Http\Request::setTrustedProxies($proxies, $trustedHeaderSet);
         }
                     /**
          * Gets the list of trusted proxies.
          *
-         * @return string[] 
          * @static 
          */        public static function getTrustedProxies()
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
@@ -9687,16 +9683,14 @@ namespace Illuminate\Support\Facades {
          * You should only list the hosts you manage using regexs.
          *
          * @param array $hostPatterns A list of trusted host patterns
-         * @return void 
          * @static 
          */        public static function setTrustedHosts($hostPatterns)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
-                        \Illuminate\Http\Request::setTrustedHosts($hostPatterns);
+                        return \Illuminate\Http\Request::setTrustedHosts($hostPatterns);
         }
                     /**
          * Gets the list of trusted host patterns.
          *
-         * @return string[] 
          * @static 
          */        public static function getTrustedHosts()
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
@@ -9724,11 +9718,10 @@ namespace Illuminate\Support\Facades {
          * 
          * The HTTP method can only be overridden when the real HTTP method is POST.
          *
-         * @return void 
          * @static 
          */        public static function enableHttpMethodParameterOverride()
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
-                        \Illuminate\Http\Request::enableHttpMethodParameterOverride();
+                        return \Illuminate\Http\Request::enableHttpMethodParameterOverride();
         }
                     /**
          * Checks whether support for the _method request parameter is enabled.
@@ -9751,12 +9744,11 @@ namespace Illuminate\Support\Facades {
                     /**
          * 
          *
-         * @return void 
          * @static 
          */        public static function setSession($session)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
                         /** @var \Illuminate\Http\Request $instance */
-                        $instance->setSession($session);
+                        return $instance->setSession($session);
         }
                     /**
          * 
@@ -10036,12 +10028,11 @@ namespace Illuminate\Support\Facades {
                     /**
          * Sets the request method.
          *
-         * @return void 
          * @static 
          */        public static function setMethod($method)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
                         /** @var \Illuminate\Http\Request $instance */
-                        $instance->setMethod($method);
+                        return $instance->setMethod($method);
         }
                     /**
          * Gets the request "intended" method.
@@ -10083,7 +10074,6 @@ namespace Illuminate\Support\Facades {
                     /**
          * Gets the mime types associated with the format.
          *
-         * @return string[] 
          * @static 
          */        public static function getMimeTypes($format)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
@@ -10101,13 +10091,12 @@ namespace Illuminate\Support\Facades {
                     /**
          * Associates a format with mime types.
          *
-         * @param string|string[] $mimeTypes The associated mime types (the preferred one must be the first as it will be used as the content type)
-         * @return void 
+         * @param string|array $mimeTypes The associated mime types (the preferred one must be the first as it will be used as the content type)
          * @static 
          */        public static function setFormat($format, $mimeTypes)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
                         /** @var \Illuminate\Http\Request $instance */
-                        $instance->setFormat($format, $mimeTypes);
+                        return $instance->setFormat($format, $mimeTypes);
         }
                     /**
          * Gets the request format.
@@ -10128,17 +10117,15 @@ namespace Illuminate\Support\Facades {
                     /**
          * Sets the request format.
          *
-         * @return void 
          * @static 
          */        public static function setRequestFormat($format)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
                         /** @var \Illuminate\Http\Request $instance */
-                        $instance->setRequestFormat($format);
+                        return $instance->setRequestFormat($format);
         }
                     /**
-         * Gets the usual name of the format associated with the request's media type (provided in the Content-Type header).
+         * Gets the format associated with the request.
          *
-         * @deprecated since Symfony 6.2, use getContentTypeFormat() instead
          * @static 
          */        public static function getContentType()
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
@@ -10146,24 +10133,13 @@ namespace Illuminate\Support\Facades {
                         return $instance->getContentType();
         }
                     /**
-         * Gets the usual name of the format associated with the request's media type (provided in the Content-Type header).
-         *
-         * @see Request::$formats
-         * @static 
-         */        public static function getContentTypeFormat()
-        {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
-                        /** @var \Illuminate\Http\Request $instance */
-                        return $instance->getContentTypeFormat();
-        }
-                    /**
          * Sets the default locale.
          *
-         * @return void 
          * @static 
          */        public static function setDefaultLocale($locale)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
                         /** @var \Illuminate\Http\Request $instance */
-                        $instance->setDefaultLocale($locale);
+                        return $instance->setDefaultLocale($locale);
         }
                     /**
          * Get the default locale.
@@ -10177,12 +10153,11 @@ namespace Illuminate\Support\Facades {
                     /**
          * Sets the locale.
          *
-         * @return void 
          * @static 
          */        public static function setLocale($locale)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
                         /** @var \Illuminate\Http\Request $instance */
-                        $instance->setLocale($locale);
+                        return $instance->setLocale($locale);
         }
                     /**
          * Get the locale.
@@ -10252,22 +10227,11 @@ namespace Illuminate\Support\Facades {
          *
          * @param bool $asResource If true, a resource will be returned
          * @return string|resource 
-         * @psalm-return ($asResource is true ? resource : string)
          * @static 
          */        public static function getContent($asResource = false)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
                         /** @var \Illuminate\Http\Request $instance */
                         return $instance->getContent($asResource);
-        }
-                    /**
-         * Gets the decoded form or json request body.
-         *
-         * @throws JsonException When the body cannot be decoded to an array
-         * @static 
-         */        public static function getPayload()
-        {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
-                        /** @var \Illuminate\Http\Request $instance */
-                        return $instance->getPayload();
         }
                     /**
          * Gets the Etags.
@@ -10314,7 +10278,6 @@ namespace Illuminate\Support\Facades {
                     /**
          * Gets a list of languages acceptable by the client browser ordered in the user browser preferences.
          *
-         * @return string[] 
          * @static 
          */        public static function getLanguages()
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
@@ -10324,7 +10287,6 @@ namespace Illuminate\Support\Facades {
                     /**
          * Gets a list of charsets acceptable by the client browser in preferable order.
          *
-         * @return string[] 
          * @static 
          */        public static function getCharsets()
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
@@ -10334,7 +10296,6 @@ namespace Illuminate\Support\Facades {
                     /**
          * Gets a list of encodings acceptable by the client browser in preferable order.
          *
-         * @return string[] 
          * @static 
          */        public static function getEncodings()
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
@@ -10344,7 +10305,6 @@ namespace Illuminate\Support\Facades {
                     /**
          * Gets a list of content types acceptable by the client browser in preferable order.
          *
-         * @return string[] 
          * @static 
          */        public static function getAcceptableContentTypes()
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
@@ -16313,156 +16273,6 @@ namespace Barryvdh\Debugbar\Facades {
             }
     }
 
-namespace Barryvdh\DomPDF\Facade {
-            /**
-     * 
-     *
-     */        class Pdf {
-                    /**
-         * Get the DomPDF instance
-         *
-         * @static 
-         */        public static function getDomPDF()
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->getDomPDF();
-        }
-                    /**
-         * Show or hide warnings
-         *
-         * @static 
-         */        public static function setWarnings($warnings)
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->setWarnings($warnings);
-        }
-                    /**
-         * Load a HTML string
-         *
-         * @param string|null $encoding Not used yet
-         * @static 
-         */        public static function loadHTML($string, $encoding = null)
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->loadHTML($string, $encoding);
-        }
-                    /**
-         * Load a HTML file
-         *
-         * @static 
-         */        public static function loadFile($file)
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->loadFile($file);
-        }
-                    /**
-         * Add metadata info
-         *
-         * @param array<string, string> $info
-         * @static 
-         */        public static function addInfo($info)
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->addInfo($info);
-        }
-                    /**
-         * Load a View and convert to HTML
-         *
-         * @param array<string, mixed> $data
-         * @param array<string, mixed> $mergeData
-         * @param string|null $encoding Not used yet
-         * @static 
-         */        public static function loadView($view, $data = [], $mergeData = [], $encoding = null)
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->loadView($view, $data, $mergeData, $encoding);
-        }
-                    /**
-         * Set/Change an option (or array of options) in Dompdf
-         *
-         * @param array<string, mixed>|string $attribute
-         * @param null|mixed $value
-         * @static 
-         */        public static function setOption($attribute, $value = null)
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->setOption($attribute, $value);
-        }
-                    /**
-         * Replace all the Options from DomPDF
-         *
-         * @param array<string, mixed> $options
-         * @static 
-         */        public static function setOptions($options, $mergeWithDefaults = false)
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->setOptions($options, $mergeWithDefaults);
-        }
-                    /**
-         * Output the PDF as a string.
-         * 
-         * The options parameter controls the output. Accepted options are:
-         * 
-         * 'compress' = > 1 or 0 - apply content stream compression, this is
-         *    on (1) by default
-         *
-         * @param array<string, int> $options
-         * @return string The rendered PDF as string
-         * @static 
-         */        public static function output($options = [])
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->output($options);
-        }
-                    /**
-         * Save the PDF to a file
-         *
-         * @static 
-         */        public static function save($filename, $disk = null)
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->save($filename, $disk);
-        }
-                    /**
-         * Make the PDF downloadable by the user
-         *
-         * @static 
-         */        public static function download($filename = 'document.pdf')
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->download($filename);
-        }
-                    /**
-         * Return a response with the PDF to show in the browser
-         *
-         * @static 
-         */        public static function stream($filename = 'document.pdf')
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->stream($filename);
-        }
-                    /**
-         * Render the PDF
-         *
-         * @static 
-         */        public static function render()
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->render();
-        }
-                    /**
-         * 
-         *
-         * @param array<string> $pc
-         * @static 
-         */        public static function setEncryption($password, $ownerpassword = '', $pc = [])
-        {
-                        /** @var \Barryvdh\DomPDF\PDF $instance */
-                        return $instance->setEncryption($password, $ownerpassword, $pc);
-        }
-            }
-    }
-
 namespace GeneaLabs\LaravelSocialiter\Facades {
             /**
      * 
@@ -16963,6 +16773,48 @@ namespace Maatwebsite\Excel\Facades {
         {
                         /** @var \Maatwebsite\Excel\Excel $instance */
                         return $instance->queueImport($import, $filePath, $disk, $readerType);
+        }
+                    /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @return void 
+         * @static 
+         */        public static function macro($name, $macro)
+        {
+                        \Maatwebsite\Excel\Excel::macro($name, $macro);
+        }
+                    /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void 
+         * @throws \ReflectionException
+         * @static 
+         */        public static function mixin($mixin, $replace = true)
+        {
+                        \Maatwebsite\Excel\Excel::mixin($mixin, $replace);
+        }
+                    /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool 
+         * @static 
+         */        public static function hasMacro($name)
+        {
+                        return \Maatwebsite\Excel\Excel::hasMacro($name);
+        }
+                    /**
+         * Flush the existing macros.
+         *
+         * @return void 
+         * @static 
+         */        public static function flushMacros()
+        {
+                        \Maatwebsite\Excel\Excel::flushMacros();
         }
                     /**
          * 
@@ -18078,6 +17930,15 @@ namespace Unicodeveloper\Paystack\Facades {
         {
                         /** @var \Unicodeveloper\Paystack\Paystack $instance */
                         return $instance->updatePage($page_id);
+        }
+                    /**
+         * 
+         *
+         * @static 
+         */        public static function getCallbackData()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getCallbackData();
         }
                     /**
          * Creates a subaccount to be used for split payments . Required    params are business_name , settlement_bank , account_number ,   percentage_charge
@@ -21675,7 +21536,6 @@ namespace  {
             class Rave extends \KingFlamez\Rave\Facades\Rave {}
             class PaytmWallet extends \Anand\LaravelPaytmWallet\Facades\PaytmWallet {}
             class Debugbar extends \Barryvdh\Debugbar\Facades\Debugbar {}
-            class Pdf extends \Barryvdh\DomPDF\Facade\Pdf {}
             class Socialiter extends \GeneaLabs\LaravelSocialiter\Facades\Socialiter {}
             class Image extends \Intervention\Image\Facades\Image {}
             class Flash extends \Laracasts\Flash\Flash {}

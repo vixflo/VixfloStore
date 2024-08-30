@@ -6,7 +6,7 @@ use App\Http\Middleware\EnsureSystemKey;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v2/auth', 'middleware' => ['app_language']], function () {
-
+    
     Route::post('info', [AuthController::class, 'getUserInfoByAccessToken']);
     Route::controller(AuthController::class)->group(function () {
         Route::post('login', 'login');
@@ -97,7 +97,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
         Route::post('update-address-in-cart', 'updateAddressInCart');
         Route::post('update-shipping-type-in-cart', 'updateShippingTypeInCart');
     });
-
+    
     Route::get('payment-types', [PaymentTypesController::class, 'getList']);
 
 
@@ -142,7 +142,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
         // review
         Route::post('reviews/submit', [ReviewController::class, 'submit'])->name('api.reviews.submit')->middleware('auth:sanctum');
         Route::get('shop/user/{id}', [ShopController::class, 'shopOfUser'])->middleware('auth:sanctum');
-
+        
         //Follow
         Route::controller(FollowSellerController::class)->group(function () {
             Route::get('/followed-seller', 'index')->middleware('auth:sanctum');
@@ -216,7 +216,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
             Route::post('notifications/bulk-delete', 'bulkDelete')->middleware('auth:sanctum');
             Route::get('notifications/mark-as-read', 'notificationMarkAsRead')->middleware('auth:sanctum');
         });
-
+        
         Route::get('products/last-viewed',[ProductController::class, 'lastViewedProducts'])->middleware('auth:sanctum');
     });
 
@@ -237,7 +237,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
         Route::get('classified/product-details/{slug}', 'productDetails');
     });
 
-
+    
     Route::get('seller/top', 'App\Http\Controllers\Api\V2\SellerController@topSellers');
 
     Route::apiResource('banners', 'App\Http\Controllers\Api\V2\BannerController')->only('index');
@@ -339,6 +339,8 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::any('paypal/payment/url', 'App\Http\Controllers\Api\V2\PaypalController@getUrl')->name('api.paypal.url');
     Route::any('amarpay', [AamarpayController::class, 'pay'])->name('api.amarpay.url');
     Route::any('khalti/payment/pay', 'App\Http\Controllers\Api\V2\KhaltiController@pay')->name('api.khalti.url');
+    Route::any('razorpay/pay-with-razorpay', 'App\Http\Controllers\Api\V2\RazorpayController@payWithRazorpay')->name('api.razorpay.payment');
+    Route::any('razorpay/payment', 'App\Http\Controllers\Api\V2\RazorpayController@payment')->name('api.razorpay.payment');
     Route::any('paystack/init', 'App\Http\Controllers\Api\V2\PaystackController@init')->name('api.paystack.init');
     Route::any('iyzico/init', 'App\Http\Controllers\Api\V2\IyzicoController@init')->name('api.iyzico.init');
 
