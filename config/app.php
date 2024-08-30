@@ -176,6 +176,8 @@ return [
          * Package Service Providers...
          */
 
+         Maatwebsite\Excel\ExcelServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -240,6 +242,7 @@ return [
         'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class,
         'Str' => Illuminate\Support\Str::class,
         'Rave' => KingFlamez\Rave\Facades\Rave::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

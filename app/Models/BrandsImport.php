@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Brand;
+use App\Traits\PreventDemoModeChanges;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Collection;
@@ -29,7 +30,7 @@ class BrandsImport implements ToCollection, WithHeadingRow, ToModel
         }
 
         flash(translate('Brands imported successfully'))->success();
-        
+
     }
 
     public function model(array $row)
