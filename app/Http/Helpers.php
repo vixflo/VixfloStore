@@ -220,7 +220,7 @@ if (!function_exists('currency_symbol')) {
 if (!function_exists('format_price')) {
     function format_price($price, $isMinimize = false)
     {
-        if (get_setting('decimal_separator') == 1) {
+        if (get_setting('decimal_separator') == 4) {
             $fomated_price = number_format($price, get_setting('no_of_decimals'));
         } else {
             $fomated_price = number_format($price, get_setting('no_of_decimals'), ',', '.');
