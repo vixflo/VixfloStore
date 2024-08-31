@@ -52,6 +52,7 @@ Options -Indexes
    php_value max_execution_time 6000
    php_value max_input_time 240
    php_value max_input_vars 10000
+   php_value max_file_uploads 50
    php_value memory_limit 1024M
    php_value post_max_size 2048M
    php_value session.gc_maxlifetime 1440
@@ -64,6 +65,7 @@ Options -Indexes
    php_value max_execution_time 6000
    php_value max_input_time 240
    php_value max_input_vars 10000
+   php_value max_file_uploads 50
    php_value memory_limit 1024M
    php_value post_max_size 2048M
    php_value session.gc_maxlifetime 1440
