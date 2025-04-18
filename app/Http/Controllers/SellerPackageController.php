@@ -55,6 +55,9 @@ class SellerPackageController extends Controller
         $seller_package->name = $request->name;
         $seller_package->amount = $request->amount;
         $seller_package->product_upload_limit = $request->product_upload_limit;
+        if(addon_is_activated('preorder')){
+            $seller_package->preorder_product_upload_limit = $request->preorder_product_upload_limit;
+        }
         $seller_package->duration = $request->duration;
         $seller_package->logo = $request->logo;
         if ($seller_package->save()) {
@@ -110,6 +113,10 @@ class SellerPackageController extends Controller
         }
         $seller_package->amount = $request->amount;
         $seller_package->product_upload_limit = $request->product_upload_limit;
+        if(addon_is_activated('preorder')){
+            $seller_package->preorder_product_upload_limit = $request->preorder_product_upload_limit;
+        }
+
         $seller_package->duration = $request->duration;
         $seller_package->logo = $request->logo;
         if ($seller_package->save()) {
@@ -148,17 +155,18 @@ class SellerPackageController extends Controller
     public function packages_payment_list()
     {
         $seller_packages_payment = SellerPackagePayment::with('seller_package')->where('user_id', Auth::user()->id)->paginate(15);
-        return view('seller_packages.frontend.packages_payment_list', compact('seller_packages_payment'));
+        return view('seller_packages.seller.packages_payment_list', compact('seller_packages_payment'));
     }
 
     public function seller_packages_list()
     {
         $seller_packages = SellerPackage::all();
-        return view('seller_packages.frontend.seller_packages_list', compact('seller_packages'));
+        return view('seller_packages.seller.seller_packages_list', compact('seller_packages'));
     }
 
     public function purchase_package(Request $request)
     {
+        $seller_purchased_package = auth()->user()->shop->seller_package;
         $data['seller_package_id'] = $request->seller_package_id;
         $data['payment_method'] = $request->payment_option;
 
@@ -169,11 +177,19 @@ class SellerPackageController extends Controller
 
         if ($seller_package->amount == 0) {
             return $this->purchase_payment_done(Session::get('payment_data'), null);
-        } elseif (Auth::user()->shop->seller_package != null && $seller_package->product_upload_limit < Auth::user()->shop->seller_package->product_upload_limit) {
-            flash(translate('You have more uploaded products than this package limit. You need to remove excessive products to downgrade.'))->warning();
-            return back();
         }
+        elseif ($seller_purchased_package != null) 
+        {
+            $can_purchase = $seller_package->product_upload_limit < $seller_purchased_package->product_upload_limit ? false : true;
+            if($can_purchase && addon_is_activated('preorder')) {
+                $can_purchase = $seller_package->preorder_product_upload_limit < $seller_purchased_package->preorder_product_upload_limit ? false : true;
+            }
 
+            if(!$can_purchase){
+                flash(translate('You can not downgrade the package.'))->warning();
+                return back();
+            }
+        }
         $decorator = __NAMESPACE__ . '\\Payment\\' . str_replace(' ', '', ucwords(str_replace('_', ' ', $request->payment_option))) . "Controller";
         if (class_exists($decorator)) {
             return (new $decorator)->pay($request);
@@ -187,6 +203,9 @@ class SellerPackageController extends Controller
         $seller->seller_package_id = Session::get('payment_data')['seller_package_id'];
         $seller_package = SellerPackage::findOrFail(Session::get('payment_data')['seller_package_id']);
         $seller->product_upload_limit = $seller_package->product_upload_limit;
+        if(addon_is_activated('preorder')){
+            $seller->preorder_product_upload_limit = $seller_package->preorder_product_upload_limit;
+        }
         $seller->package_invalid_at = date('Y-m-d', strtotime($seller->package_invalid_at . ' +' . $seller_package->duration . 'days'));
         $seller->save();
 
@@ -212,6 +231,10 @@ class SellerPackageController extends Controller
                     $product->published = 0;
                     $product->save();
                 }
+                foreach ($shop->user->preorderProducts as $preorderProduct) {
+                    $preorderProduct->is_published = 0;
+                    $preorderProduct->save();
+                }
                 $shop->seller_package_id = null;
                 $shop->package_invalid_at = null;
                 $shop->save();
@@ -224,8 +247,18 @@ class SellerPackageController extends Controller
     {
         $seller_package = SellerPackage::findOrFail($request->package_id);
         $user = auth()->user();
-        if ($user->shop->seller_package != null && $seller_package->product_upload_limit < $user->shop->seller_package->product_upload_limit) {
-            flash(translate('You have more uploaded products than this package limit. You need to remove excessive products to downgrade.'))->warning();
+        $seller_purchased_package = $user->shop->seller_package;
+        if ($user->shop->seller_package != null) {
+            $can_purchase = $seller_package->product_upload_limit < $seller_purchased_package->product_upload_limit ? false : true;
+            if($can_purchase && addon_is_activated('preorder')) {
+                $can_purchase = $seller_package->preorder_product_upload_limit < $seller_purchased_package->preorder_product_upload_limit ? false : true;
+            }
+
+            if(!$can_purchase){
+                flash(translate('You can not downgrade the package.'))->warning();
+                return back();
+            }
+            flash(translate('You can not downgrade the package'))->warning();
             return redirect()->route('seller.seller_packages_list');
         }
         $seller_package_payment = new SellerPackagePayment;

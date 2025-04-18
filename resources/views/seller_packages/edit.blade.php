@@ -40,6 +40,14 @@
                         <input type="number" min="0" step="1" placeholder="{{translate('Product Upload Limit')}}" value="{{ $seller_package->product_upload_limit }}" id="product_upload_limit" name="product_upload_limit" class="form-control" required>
                     </div>
                 </div>
+                @if(addon_is_activated('preorder'))
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-from-label" for="preorder_product_upload_limit">{{translate('Preorder Product Upload Limit')}}</label>
+                        <div class="col-sm-10">
+                            <input type="number" min="0" step="1" placeholder="{{translate('Preorder Product Upload Limit')}}" value="{{ $seller_package->preorder_product_upload_limit }}" id="preorder_product_upload_limit" name="preorder_product_upload_limit" class="form-control" required>
+                        </div>
+                    </div>
+                @endif
                 <div class="form-group row">
                     <label class="col-sm-2 col-from-label" for="duration">{{translate('Duration')}}</label>
                     <div class="col-sm-10">

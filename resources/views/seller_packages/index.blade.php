@@ -28,6 +28,11 @@
                     <p class="fs-15">{{translate('Product Upload Limit') }}:
                         <b class="text-bold">{{$seller_package->product_upload_limit}}</b>
                     </p>
+                    @if(addon_is_activated('preorder'))
+                        <p class="fs-15">{{translate('Preorder Product Upload Limit') }}:
+                            <b class="text-bold">{{$seller_package->preorder_product_upload_limit}}</b>
+                        </p>
+                    @endif
 					<p class="fs-15">{{translate('Package Duration') }}:
                         <b class="text-bold">{{$seller_package->duration}} {{translate('days')}}</b>
                     </p>

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\AccountOpeningByAdminEmailManager;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Utility\EmailUtility;
 use Hash;
-use Mail;
 
 class CustomerController extends Controller
 {
@@ -16,6 +15,7 @@ class CustomerController extends Controller
         $this->middleware(['permission:add_customer'])->only('create');
         $this->middleware(['permission:login_as_customer'])->only('login');
         $this->middleware(['permission:ban_customer'])->only('ban');
+        $this->middleware(['permission:mark_customer_suspected'])->only('suspicious');
         $this->middleware(['permission:delete_customer'])->only('destroy');
     }
 
@@ -95,27 +95,23 @@ class CustomerController extends Controller
                 'password' => Hash::make($password),
             ]);
 
-            // Account Opening Email
-            $array['user_type'] = 'customer';
-            $array['password'] = $password;
-            $array['subject'] = translate('Account Opening Email');
-            $array['from'] = env('MAIL_FROM_ADDRESS');
+            // Account Opening Email to customer
             try {
-                Mail::to($user->email)->queue(new AccountOpeningByAdminEmailManager($array));
+                EmailUtility::customer_registration_email('registration_from_system_email_to_customer', $user, $password);
             } catch (\Exception $e) {
                 $user->delete();
                 flash(translate('Registration failed. Please try again later.'))->error();
                 return back();
             }
 
-            // Email verification 
+            // Email Verification mail to Customer
             if(get_setting('email_verification') != 1){
                 $user->email_verified_at = date('Y-m-d H:m:s');
                 $user->save();
                 offerUserWelcomeCoupon();
             }
             else {
-                $user->sendEmailVerificationNotification();
+                EmailUtility::email_verification($user, 'customer');
             }
             flash(translate('Registration successful.'))->success();
 
@@ -136,6 +132,14 @@ class CustomerController extends Controller
                 flash(translate('Registration successful.'))->success();
             }
         }
+
+        // Customer Account Opening Email to Admin
+        if ((get_email_template_data('customer_reg_email_to_admin', 'status') == 1)) {
+            try {
+                EmailUtility::customer_registration_email('customer_reg_email_to_admin', $user, null);
+            } catch (\Exception $e) {}
+        }
+
         return back();
     }
 
@@ -219,6 +223,21 @@ class CustomerController extends Controller
         } else {
             $user->banned = 1;
             flash(translate('Customer Banned Successfully'))->success();
+        }
+
+        $user->save();
+        
+        return back();
+    }
+    public function suspicious($id) {
+        $user = User::findOrFail(decrypt($id));
+
+        if($user->is_suspicious == 1) {
+            $user->is_suspicious = 0;
+            flash(translate('Customer unsuspected  Successfully'))->success();
+        } else {
+            $user->is_suspicious = 1;
+            flash(translate('Customer suspected Successfully'))->success();
         }
 
         $user->save();

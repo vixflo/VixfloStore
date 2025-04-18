@@ -13,7 +13,7 @@
                 @php
                     $delivery_status = $order->delivery_status;
                     $payment_status = $order->payment_status;
-                    $admin_user_id = App\Models\User::where('user_type', 'admin')->first()->id;
+                    $admin_user_id = get_admin()->id;
                 @endphp
                 @if ($order->seller_id == $admin_user_id || get_setting('product_manage_by_admin') == 1)
 
@@ -231,7 +231,7 @@
                                                 @php
                                                     $product_stock = $orderDetail->product->stocks->where('variant', $orderDetail->variation)->first();
                                                 @endphp
-                                                {{translate('SKU')}}: {{ $product_stock['sku'] }}
+                                                {{translate('SKU')}}: {{ $product_stock['sku'] ?? '' }}
                                             </small>
                                         @elseif ($orderDetail->product != null && $orderDetail->product->auction_product == 1)
                                             <strong>
@@ -380,6 +380,7 @@
                 status: status
             }, function(data) {
                 AIZ.plugins.notify('success', '{{ translate('Delivery status has been updated') }}');
+                location.reload();
             });
         });
 
@@ -399,6 +400,7 @@
                 $('#update_payment_status').prop('disabled', true);
                 AIZ.plugins.bootstrapSelect('refresh');
                 AIZ.plugins.notify('success', '{{ translate('Payment status has been updated') }}');
+                location.reload();
             });
         }
 

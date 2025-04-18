@@ -40,43 +40,45 @@ class RouteServiceProvider extends ServiceProvider
    */
   public function map()
   {
-     $this->mapApiRoutes();
+    $this->mapApiRoutes();
 
-     $this->mapApiSellerRoutes();
-    
-     $this->mapAdminRoutes();
+    $this->mapApiSellerRoutes();
 
-     $this->mapSellerRoutes();
-    
-     $this->mapAffiliateRoutes();
-    
-     $this->mapRefundRoutes();
-    
-     $this->mapClubPointsRoutes();
-    
-     $this->mapOtpRoutes();
-    
-     $this->mapOfflinePaymentRoutes();
-    
-     $this->mapAfricanPaymentGatewayRoutes();
-    
-     $this->mapPaytmRoutes();
-    
-     $this->mapPosRoutes();
-    
-     $this->mapSellerPackageRoutes();
-    
-     $this->mapDeliveryBoyRoutes();
-    
-     $this->mapAuctionRoutes();
+    $this->mapAdminRoutes();
 
-     $this->mapWholesaleRoutes();
-    
-     $this->mapWebRoutes();
+    $this->mapSellerRoutes();
+
+    $this->mapAffiliateRoutes();
+
+    $this->mapRefundRoutes();
+
+    $this->mapClubPointsRoutes();
+
+    $this->mapOtpRoutes();
+
+    $this->mapOfflinePaymentRoutes();
+
+    $this->mapAfricanPaymentGatewayRoutes();
+
+    $this->mapPaytmRoutes();
+
+    $this->mapPosRoutes();
+
+    $this->mapSellerPackageRoutes();
+
+    $this->mapDeliveryBoyRoutes();
+
+    $this->mapAuctionRoutes();
+
+    $this->mapWholesaleRoutes();
+
+    $this->mapPreorderRoutes();
+
+    $this->mapWebRoutes();
 
     // $this->mapInstallRoutes();
 
-    //$this->mapUpdateRoutes();
+    // $this->mapUpdateRoutes();
   }
 
   /**
@@ -317,6 +319,20 @@ class RouteServiceProvider extends ServiceProvider
        ->namespace($this->namespace)
        ->group(base_path('routes/seller.php'));
   }
+
+	 /**
+     * Define the "Pre Order" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function mapPreorderRoutes()
+    {
+        Route::middleware('web')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/preorder.php'));
+    }
 
   /**
    * Define the "api" routes for the application.

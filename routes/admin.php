@@ -25,10 +25,12 @@ use App\Http\Controllers\CustomerPackageController;
 use App\Http\Controllers\CustomerProductController;
 use App\Http\Controllers\DigitalProductController;
 use App\Http\Controllers\DynamicPopupController;
+use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FlashDealController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\MeasurementPointsController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationTypeController;
 use App\Http\Controllers\OrderController;
@@ -51,6 +53,7 @@ use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\TaxController;
 use App\Http\Controllers\UpdateController;
+use App\Http\Controllers\WarrantyController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\ZoneController;
 
@@ -93,6 +96,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     Route::controller(BrandController::class)->group(function () {
         Route::get('/brands/edit/{id}', 'edit')->name('brands.edit');
         Route::get('/brands/destroy/{id}', 'destroy')->name('brands.destroy');
+    });
+
+    // Warranty
+    Route::resource('warranties', WarrantyController::class);
+    Route::controller(WarrantyController::class)->group(function () {
+        Route::get('/warranties/edit/{id}', 'edit')->name('warranties.edit');
+        Route::get('/warranties/destroy/{id}', 'destroy')->name('warranties.destroy');
     });
 
     Route::controller(BrandBulkUploadController::class)->group(function () {
@@ -159,9 +169,18 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         });
     });
 
+    // Note
+    Route::resource('note', NoteController::class);
+    Route::controller(NoteController::class)->group(function () {
+        Route::get('/note/edit/{id}', 'edit')->name('note.edit');
+        Route::get('note/delete/{note}', 'destroy')->name('note.delete');
+        Route::post('note/update-seller-access', 'updateSelelrAccess')->name('note.update-seller-access');
+    });
+
     // Seller
     Route::resource('sellers', SellerController::class);
     Route::controller(SellerController::class)->group(function () {
+        Route::get('/seller/rating-followers', 'index')->name('sellers.rating_followers');
         Route::get('sellers_ban/{id}', 'ban')->name('sellers.ban');
         Route::get('/sellers/destroy/{id}', 'destroy')->name('sellers.destroy');
         Route::post('/bulk-seller-delete', 'bulk_seller_delete')->name('bulk-seller-delete');
@@ -173,6 +192,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/sellers/profile_modal', 'profile_modal')->name('sellers.profile_modal');
         Route::post('/sellers/approved', 'updateApproved')->name('sellers.approved');
         Route::post('/sellers/set-commission', 'setSellerBasedCommission')->name('set_seller_based_commission');
+        Route::post('/sellers/edit-custom-followers', 'editSellerCustomFollowers')->name('edit_Seller_custom_followers');
     });
 
     // Seller Payment
@@ -193,6 +213,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     Route::resource('customers', CustomerController::class);
     Route::controller(CustomerController::class)->group(function () {
         Route::get('customers_ban/{customer}', 'ban')->name('customers.ban');
+        Route::get('customers-suspicious/{customer}', 'suspicious')->name('customers.suspicious');
         Route::get('/customers/login/{id}', 'login')->name('customers.login');
         Route::get('/customers/destroy/{id}', 'destroy')->name('customers.destroy');
         Route::post('/bulk-customer-delete', 'bulk_customer_delete')->name('bulk-customer-delete');
@@ -247,9 +268,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/google-map', 'google_map')->name('google-map.index');
         Route::get('/google-firebase', 'google_firebase')->name('google-firebase.index');
 
+        Route::get('/whatsapp-chat', 'whatsappChat')->name('whatsapp_chat.index');
+        Route::post('/whatsapp_chat/update', 'whatsappChatUpdate')->name('whatsapp_chat.update');
+
         //Facebook Settings
-        Route::get('/facebook-chat', 'facebook_chat')->name('facebook_chat.index');
-        Route::post('/facebook_chat', 'facebook_chat_update')->name('facebook_chat.update');
         Route::get('/facebook-comment', 'facebook_comment')->name('facebook-comment');
         Route::post('/facebook-comment', 'facebook_comment_update')->name('facebook-comment.update');
         Route::post('/facebook_pixel', 'facebook_pixel_update')->name('facebook_pixel.update');
@@ -445,6 +467,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     Route::controller(ReviewController::class)->group(function () {
         Route::get('/reviews', 'index')->name('reviews.index');
         Route::post('/reviews/published', 'updatePublished')->name('reviews.published');
+        Route::get('/reviews/detail-reviews/{id}', 'detailReviews')->name('detail-reviews');
+        Route::get('/reviews/destroy', 'destroy')->name('reviews.destroy');
+
+        Route::get('/custom-review/create/{productId?}', 'customReviewCreate')->name('custom-review.create');
+        Route::get('/custom-review/edit/{id}', 'customReviewEdit')->name('custom-review.edit');
+        Route::post('/custom-review/update', 'customReviewUpdate')->name('custom-review.update');
+        Route::post('/custom-review/get-products', 'getProductByCategory')->name('get-custom-review-product-by-category');
     });
 
     //Support_Ticket
@@ -452,6 +481,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('support_ticket/', 'admin_index')->name('support_ticket.admin_index');
         Route::get('support_ticket/{id}/show', 'admin_show')->name('support_ticket.admin_show');
         Route::post('support_ticket/reply', 'admin_store')->name('support_ticket.admin_store');
+    });
+
+    // Email Template
+    Route::resource('email-templates', EmailTemplateController::class);
+    Route::controller(EmailTemplateController::class)->group(function () {
+        Route::get('/email-template/{id}', 'index')->name('email-templates.index');
+        Route::post('/email-template/update-status', 'updateStatus')->name('email-template.update-status');
     });
 
     //Pickup_Points
@@ -577,7 +613,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/custom-notifications.delete/{identifier}', 'customNotificationSingleDelete')->name('custom-notifications.delete');
         Route::post('/custom-notifications.bulk_delete', 'customNotificationBulkDelete')->name('custom-notifications.bulk_delete');
         Route::post('/custom-notified-customers-list', 'customNotifiedCustomersList')->name('custom_notified_customers_list');
-
     });
 
     Route::resource('notification-type', NotificationTypeController::class);
@@ -593,4 +628,3 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
 
     Route::get('/admin-permissions', [RoleController::class, 'create_admin_permissions']);
 });
-

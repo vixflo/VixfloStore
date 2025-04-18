@@ -281,7 +281,6 @@ class ProductController extends Controller
         $product = Product::findOrFail($request->id);
         $product->published = $request->status;
         if (addon_is_activated('seller_subscription') && $request->status == 1) {
-            $shop = $product->user->shop;
             if (!seller_package_validity_check()) {
                 return 2;
             }
@@ -355,7 +354,7 @@ class ProductController extends Controller
         $product->frequently_bought_products()->delete();
         $product->last_viewed_products()->delete();
         $product->flash_deal_products()->delete();
-        
+        deleteProductReview($product);
         if (Product::destroy($id)) {
             Cart::where('product_id', $id)->delete();
             Wishlist::where('product_id', $id)->delete();

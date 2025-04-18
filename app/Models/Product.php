@@ -63,7 +63,7 @@ class Product extends Model
 
     public function reviews()
     {
-        return $this->hasMany(Review::class)->where('status', 1);
+        return $this->hasMany(Review::class);
     }
 
     public function product_queries()
@@ -125,4 +125,20 @@ class Product extends Model
     {
         return $this->hasMany(LastViewedProduct::class);
     }
+
+    public function warranty()
+    {
+        return $this->belongsTo(Warranty::class);
+    }
+
+    public function warrantyNote()
+    {
+        return $this->belongsTo(Note::class, 'warranty_note_id');
+    }
+
+    public function refundNote()
+    {
+        return $this->belongsTo(Note::class, 'refund_note_id');
+    }
+
 }
