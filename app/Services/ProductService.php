@@ -148,6 +148,8 @@ class ProductService
             }
         }
 
+        $collection['has_warranty'] = isset($collection['has_warranty']) ? 1 : 0;
+
         $data = $collection->merge(compact(
             'user_id',
             'approved',
@@ -293,6 +295,8 @@ class ProductService
             $attributes = json_encode(array());
         }
 
+        $collection['has_warranty'] = isset($collection['has_warranty']) ? 1 : 0;
+        
         unset($collection['button']);
         
         $data = $collection->merge(compact(
@@ -332,6 +336,7 @@ class ProductService
         $product->frequently_bought_products()->delete();
         $product->last_viewed_products()->delete();
         $product->flash_deal_products()->delete();
+        deleteProductReview($product);
         Product::destroy($id);
     }
 

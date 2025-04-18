@@ -38,8 +38,14 @@
                         href="{{ route('shop.visit.type', ['slug'=>$shop->slug, 'type'=>'top-selling']) }}">{{ translate('Top Selling')}}</a>
                 <a class="fw-700 fs-11 fs-md-13 mr-3 mr-sm-4 mr-md-5 text-dark opacity-60 hov-opacity-100 @if(isset($type) && $type == 'cupons') opacity-100 @endif"
                         href="{{ route('shop.visit.type', ['slug'=>$shop->slug, 'type'=>'cupons']) }}">{{ translate('Coupons')}}</a>
-                <a class="fw-700 fs-11 fs-md-13 text-dark opacity-60 hov-opacity-100 @if(isset($type) && $type == 'all-products') opacity-100 @endif"
+
+                <a class="fw-700 fs-11 fs-md-13 text-dark mr-3 mr-sm-4 mr-md-5 opacity-60 hov-opacity-100 @if(isset($type) && $type == 'all-products') opacity-100 @endif"
                         href="{{ route('shop.visit.type', ['slug'=>$shop->slug, 'type'=>'all-products']) }}">{{ translate('All Products')}}</a>
+
+                @if(addon_is_activated('preorder'))
+                <a class="fw-700 fs-11 fs-md-13 mr-3 mr-sm-4 mr-md-5 text-dark opacity-60 hov-opacity-100 @if(isset($type) && $type == 'all-preorder-products') opacity-100 @endif"
+                        href="{{ route('shop.visit.type', ['slug'=>$shop->slug, 'type'=>'all-preorder-products']) }}">{{ translate('All Preorder Products')}}</a>
+                @endif
             </div>
         </div>
     </section>
@@ -52,12 +58,14 @@
     @endphp
 
     @if (!isset($type) || $type == 'top-selling' || $type == 'cupons')
-        @if ($shop->top_banner)
+        @if ($shop->top_banner_image)
             <!-- Top Banner -->
             <section class="h-160px h-md-200px h-lg-300px h-xl-100 w-100">
-                <img class="d-block lazyload h-100 img-fit"
-                    src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
-                    data-src="{{ uploaded_asset($shop->top_banner) }}" alt="{{ env('APP_NAME') }} offer">
+                <a href="{{ $shop->top_banner_link }}">
+                    <img class="d-block lazyload h-100 img-fit"
+                        src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
+                        data-src="{{ uploaded_asset($shop->top_banner_image) }}" alt="{{ env('APP_NAME') }} offer">
+                </a>
             </section>
         @endif
     @endif
@@ -170,19 +178,20 @@
                             </div>
                             <!-- follow -->
                             <div class="d-flex justify-content-md-end pl-lg-3 pt-3 pt-lg-0">
+                                @php $shopFollowers = count($shop->followers) + $shop->custom_followers; @endphp
                                 @if(in_array($shop->id, $followed_sellers))
                                     <a href="{{ route("followed_seller.remove", ['id'=>$shop->id]) }}"  data-toggle="tooltip" data-title="{{ translate('Unfollow Seller') }}" data-placement="top"
                                         class="btn btn-success d-flex align-items-center justify-content-center fs-12 w-190px follow-btn followed"
                                         style="height: 40px; border-radius: 30px !important; justify-content: center;">
                                         <i class="las la-check fs-16 mr-2"></i>
-                                        <span class="fw-700">{{ translate('Followed') }}</span> &nbsp; ({{ count($shop->followers) }})
+                                        <span class="fw-700">{{ translate('Followed') }}</span> &nbsp; ({{ $shopFollowers }})
                                     </a>
                                 @else
                                     <a href="{{ route("followed_seller.store", ['id'=>$shop->id]) }}"
                                         class="btn btn-primary d-flex align-items-center justify-content-center fs-12 w-190px follow-btn"
                                         style="height: 40px; border-radius: 30px !important; justify-content: center;">
                                         <i class="las la-plus fs-16 mr-2"></i>
-                                        <span class="fw-700">{{ translate('Follow Seller') }}</span> &nbsp; ({{ count($shop->followers) }})
+                                        <span class="fw-700">{{ translate('Follow Seller') }}</span> &nbsp; ({{ $shopFollowers }})
                                     </a>
                                 @endif
                             </div>
@@ -194,11 +203,12 @@
     </section>
 
     @if (!isset($type))
+
+        <!-- Featured Products -->
         @php
             $feature_products = $shop->user->products->where('published', 1)->where('approved', 1)->where('seller_featured', 1);
         @endphp
         @if (count($feature_products) > 0)
-            <!-- Featured Products -->
             <section class="mt-3 mb-3" id="section_featured">
                 <div class="container">
                 <!-- Top Section -->
@@ -228,19 +238,29 @@
         @endif
 
         <!-- Banner Slider -->
-        <section class="mt-3 mb-3">
-            <div class="container">
-                <div class="aiz-carousel mobile-img-auto-height" data-arrows="true" data-dots="false" data-autoplay="true">
-                    @if ($shop->sliders != null)
-                        @foreach (explode(',',$shop->sliders) as $key => $slide)
+        @if ($shop->slider_images != null)
+            <section class="mt-3 mb-3">
+                <div class="container">
+                    <div class="aiz-carousel mobile-img-auto-height" data-arrows="true" data-dots="false" data-autoplay="true">
+                        @php
+                            $shop_slider_images = get_slider_images(json_decode($shop->slider_images, true));
+                            $shop_slider_links = json_decode($shop->slider_links, true);
+                        @endphp
+                        @foreach ($shop_slider_images as $key => $slider)
                             <div class="carousel-box w-100 h-140px h-md-300px h-xl-450px">
-                                <img class="d-block lazyload h-100 img-fit" src="{{ static_asset('assets/img/placeholder-rect.jpg') }}" data-src="{{ uploaded_asset($slide) }}" alt="{{ $key }} offer">
+                                <a href="{{ isset($shop_slider_links[$key]) ? $shop_slider_links[$key] : '' }}">
+                                    <img class="d-block lazyload h-100 img-fit" 
+                                        src="{{ $slider ? my_asset($slider->file_name) : static_asset('assets/img/placeholder.jpg') }}"
+                                        onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';"
+                                        alt="{{ $key }} offer">
+                                </a>
                             </div>
                         @endforeach
-                    @endif
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        @endif
+
 
         <!-- Coupons -->
         @php
@@ -273,30 +293,44 @@
                 </div>
             </section>
         @endif
-
-        @if ($shop->banner_full_width_1)
-            <!-- Banner full width 1 -->
-            @foreach (explode(',',$shop->banner_full_width_1) as $key => $banner)
+        
+        <!-- Banner full width 1 -->
+        @if ($shop->banner_full_width_1_images)
+            @php
+                $shop_banner_full_width_1_images = get_slider_images(json_decode($shop->banner_full_width_1_images, true));
+                $shop_banner_full_width_1_links = json_decode($shop->banner_full_width_1_links, true);
+            @endphp
+            @foreach ($shop_banner_full_width_1_images as $key => $banner)
                 <section class="container mb-3 mt-3">
                     <div class="w-100">
-                        <img class="d-block lazyload h-100 img-fit"
-                            src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
-                            data-src="{{ uploaded_asset($banner) }}" alt="{{ env('APP_NAME') }} offer">
+                        <a href="{{ isset($shop_banner_full_width_1_links[$key]) ? $shop_banner_full_width_1_links[$key] : '' }}">
+                            <img class="d-block lazyload h-100 img-fit"
+                                src="{{ $banner ? my_asset($banner->file_name) : static_asset('assets/img/placeholder.jpg') }}"
+                                onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';"
+                                alt="{{ env('APP_NAME') }} banner">
+                        </a>
                     </div>
                 </section>
             @endforeach
         @endif
-
-        @if($shop->banners_half_width)
-            <!-- Banner half width -->
+        
+        <!-- Banner half width -->
+        @if($shop->banners_half_width_images)
+            @php
+                $shop_banners_half_width_images = get_slider_images(json_decode($shop->banners_half_width_images, true));
+                $shop_banners_half_width_links = json_decode($shop->banners_half_width_links, true);
+            @endphp
             <section class="container  mb-3 mt-3">
                 <div class="row gutters-16">
-                    @foreach (explode(',',$shop->banners_half_width) as $key => $banner)
+                    @foreach ($shop_banners_half_width_images as $key => $banner)
                     <div class="col-md-6 mb-3 mb-md-0">
                         <div class="w-100">
-                            <img class="d-block lazyload h-100 img-fit"
-                                src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
-                                data-src="{{ uploaded_asset($banner) }}" alt="{{ env('APP_NAME') }} offer">
+                            <a href="{{ isset($shop_banners_half_width_links[$key]) ? $shop_banners_half_width_links[$key] : '' }}">
+                                <img class="d-block lazyload h-100 img-fit"
+                                    src="{{ $banner ? my_asset($banner->file_name) : static_asset('assets/img/placeholder.jpg') }}"
+                                    onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';"
+                                    alt="{{ env('APP_NAME') }} banner">
+                            </a>
                         </div>
                     </div>
                     @endforeach
@@ -355,13 +389,20 @@
                     </div>
                 </div>
 
-                @if ($shop->banner_full_width_2)
-                    <!-- Banner full width 2 -->
-                    @foreach (explode(',',$shop->banner_full_width_2) as $key => $banner)
+                <!-- Banner full width 2 -->
+                @if ($shop->banner_full_width_2_images)
+                    @php
+                        $shop_banner_full_width_2_images = get_slider_images(json_decode($shop->banner_full_width_2_images, true));
+                        $shop_banner_full_width_2_links = json_decode($shop->banner_full_width_2_links, true);
+                    @endphp
+                    @foreach ($shop_banner_full_width_2_images as $key => $banner)
                         <div class="mt-3 mb-3 w-100">
-                            <img class="d-block lazyload h-100 img-fit"
-                                src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
-                                data-src="{{ uploaded_asset($banner) }}" alt="{{ env('APP_NAME') }} offer">
+                            <a href="{{ isset($shop_banner_full_width_2_links[$key]) ? $shop_banner_full_width_2_links[$key] : '' }}">
+                                <img class="d-block lazyload h-100 img-fit"
+                                    src="{{ $banner ? my_asset($banner->file_name) : static_asset('assets/img/placeholder.jpg') }}"
+                                    onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';"
+                                    alt="{{ env('APP_NAME') }} banner">
+                            </a>
                         </div>
                     @endforeach
                 @endif
@@ -614,7 +655,152 @@
                         </div>
                     </div>
                 </form>
+
+            @elseif ($type == 'all-preorder-products')
+                <!-- All preorder Products Section -->
+                <form class="" id="search-form" action="" method="GET">
+                    <div class="row gutters-16 justify-content-center">
+                        <!-- Sidebar -->
+                        <div class="col-xl-3 col-md-6 col-sm-8">
+
+                            <!-- Sidebar Filters -->
+                            <div class="aiz-filter-sidebar collapse-sidebar-wrap sidebar-xl sidebar-right z-1035">
+                                <div class="overlay overlay-fixed dark c-pointer" data-toggle="class-toggle" data-target=".aiz-filter-sidebar" data-same=".filter-sidebar-thumb"></div>
+                                <div class="collapse-sidebar c-scrollbar-light text-left">
+                                    <div class="d-flex d-xl-none justify-content-between align-items-center pl-3 border-bottom">
+                                        <h3 class="h6 mb-0 fw-600">{{ translate('Filters') }}</h3>
+                                        <button type="button" class="btn btn-sm p-2 filter-sidebar-thumb" data-toggle="class-toggle" data-target=".aiz-filter-sidebar" >
+                                            <i class="las la-times la-2x"></i>
+                                        </button>
+                                    </div>
+
+                                        <!-- Categories -->
+     
+                                <div class="bg-white border mb-4 mx-3 mx-xl-0 mt-3 mt-xl-0">
+                                    <div class="fs-16 fw-700 p-3">
+                                        <a href="#collapse_1" class="dropdown-toggle filter-section text-dark d-flex align-items-center justify-content-between" data-toggle="collapse">
+                                            {{ translate('Categories')}}
+                                        </a>
+                                    </div>
+                                    <div class="collapse show px-3" id="collapse_1">
+                                       
+                                        @php
+                                        $product_categories = $type == 'all-preorder-products' ? get_categories_by_preorder_products($shop->user->id) : get_categories_by_products($shop->user->id);
+                                        @endphp
+                                        @foreach ($product_categories as $category)
+                                            <label class="aiz-checkbox mb-3">
+                                                <input
+                                                    type="checkbox"
+                                                    name="selected_categories[]"
+                                                    value="{{ $category->id }}" @if (in_array($category->id, $selected_categories)) checked @endif
+                                                    onchange="filter()"
+                                                >
+                                                <span class="aiz-square-check"></span>
+                                                <span class="fs-14 fw-400 text-dark">{{ $category->getTranslation('name') }}</span>
+                                            </label>
+                                            <br>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                 <!-- Attributes -->
+                                 <div class="bg-white border mb-3">
+                                    <div class="fs-16 fw-700 p-3">
+                                        <a href="#" class="dropdown-toggle text-dark filter-section collapsed d-flex align-items-center justify-content-between" 
+                                            data-toggle="collapse" data-target="#collapse_availability_filter" style="white-space: normal;">
+                                            {{ translate('Filter by Availability') }}
+                                        </a>
+                                    </div>
+                                    @php
+                                        $show = $is_available !== null ? 'show' : '';
+                                    @endphp
+                                    <div class="collapse {{ $show }}" id="collapse_availability_filter">
+                                        <div class="p-3 aiz-checkbox-list">
+                                            <label class="aiz-checkbox mb-3">
+                                                <input
+                                                    type="radio"
+                                                    name="is_available"
+                                                    value="1" @if ($is_available == 1) checked @endif
+                                                    onchange="filter()"
+                                                >
+                                                <span class="aiz-square-check"></span>
+                                                <span class="fs-14 fw-400 text-dark">{{ translate('Available Now') }}</span>
+                                            </label>
+                                            <label class="aiz-checkbox mb-3">
+                                                <input
+                                                    type="radio"
+                                                    name="is_available"
+                                                    value="0" @if ($is_available === '0') checked @endif
+                                                    onchange="filter()"
+                                                >
+                                                <span class="aiz-square-check"></span>
+                                                <span class="fs-14 fw-400 text-dark">{{ translate('Upcoming') }}</span>
+                                            </label>
+                                            <label class="aiz-checkbox mb-3">
+                                                <input
+                                                    type="radio"
+                                                    name="is_available"
+                                                    value=""
+                                                    @if ($is_available === null) checked @endif
+                                                    onchange="filter()"
+                                                >
+                                                <span class="aiz-square-check"></span>
+                                                <span class="fs-14 fw-400 text-dark">{{ translate('All') }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contents -->
+                        <div class="col-xl-9">
+                            <!-- Top Filters -->
+                            <div class="text-left mb-2">
+                                <div class="row gutters-5 flex-wrap">
+                                    <div class="col-lg col-10">
+                                        <h1 class="fs-20 fs-md-24 fw-700 text-dark">
+                                            {{ translate('All Preorder Products') }}
+                                        </h1>
+                                    </div>
+                                    <div class="col-2 col-lg-auto d-xl-none mb-lg-3 text-right">
+                                        <button type="button" class="btn btn-icon p-0" data-toggle="class-toggle" data-target=".aiz-filter-sidebar">
+                                            <i class="la la-filter la-2x"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col-6 col-lg-auto mb-3 w-lg-200px">
+                                        <select class="form-control form-control-sm aiz-selectpicker rounded-0" name="sort_by" onchange="filter()">
+                                            <option value="">{{ translate('Sort by')}}</option>
+                                            <option value="newest" @isset($sort_by) @if ($sort_by == 'newest') selected @endif @endisset>{{ translate('Newest')}}</option>
+                                            <option value="oldest" @isset($sort_by) @if ($sort_by == 'oldest') selected @endif @endisset>{{ translate('Oldest')}}</option>
+                                            <option value="price-asc" @isset($sort_by) @if ($sort_by == 'price-asc') selected @endif @endisset>{{ translate('Price low to high')}}</option>
+                                            <option value="price-desc" @isset($sort_by) @if ($sort_by == 'price-desc') selected @endif @endisset>{{ translate('Price high to low')}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Products -->
+                            <div class="px-3">
+                                <div class="row gutters-16 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-4 row-cols-md-3 row-cols-2 border-top border-left">
+                                    @foreach ($products as $key => $product)
+                                        <div class="col border-right border-bottom has-transition hov-shadow-out z-1">
+                                            {{-- @include('frontend.'.get_setting('homepage_select').'.partials.product_box_1',['product' => $product]) --}}
+                                            @include('preorder.frontend.product_box3',['product' => $product])
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="aiz-pagination mt-4">
+                                {{ $products->appends(request()->input())->links() }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
             @else
+
                 <!-- Top Selling Products Section -->
                 <div class="px-3">
                     <div class="row gutters-16 row-cols-xxl-6 row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-2 border-left border-top">

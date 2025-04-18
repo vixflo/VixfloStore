@@ -2,9 +2,7 @@
 
 namespace App\Utility;
 
-use App\Models\OtpConfiguration;
 use App\Models\SmsTemplate;
-use App\Models\User;
 use App\Services\SendSmsService;
 
 class SmsUtility
@@ -20,11 +18,33 @@ class SmsUtility
         (new SendSmsService())->sendSMS($user->phone, env('APP_NAME'), $sms_body, $template_id);
     }
 
+    public static function account_opening($user, $password)
+    {
+        $sms_template   = SmsTemplate::where('identifier', 'account_opening')->first();
+        $sms_body       = $sms_template->sms_body;
+        $sms_body       = str_replace('[[site_name]]', env('APP_NAME'), $sms_body);
+        $sms_body       = str_replace('[[code]]', $user->verification_code, $sms_body);
+        $sms_body       = str_replace('[[password]]', $password, $sms_body);
+        $template_id    = $sms_template->template_id;
+        
+        (new SendSmsService())->sendSMS($user->phone, env('APP_NAME'), $sms_body, $template_id);
+    }
+
     public static function password_reset($user = '')
     {
         $sms_template   = SmsTemplate::where('identifier', 'password_reset')->first();
         $sms_body       = $sms_template->sms_body;
         $sms_body       = str_replace('[[code]]', $user->verification_code, $sms_body);
+        $template_id    = $sms_template->template_id;
+        
+        (new SendSmsService())->sendSMS($user->phone, env('APP_NAME'), $sms_body, $template_id);
+    }
+
+    public static function loginWithOtp($user)
+    {
+        $sms_template   = SmsTemplate::where('identifier', 'login_with_otp')->first();
+        $sms_body       = $sms_template->sms_body;
+        $sms_body       = str_replace('[[code]]', $user->otp_code, $sms_body);
         $template_id    = $sms_template->template_id;
         
         (new SendSmsService())->sendSMS($user->phone, env('APP_NAME'), $sms_body, $template_id);

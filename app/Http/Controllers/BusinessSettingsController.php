@@ -10,6 +10,8 @@ use CoreComponentRepository;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 use Str;
+use DB;
+use ZipArchive;
 
 class BusinessSettingsController extends Controller
 {
@@ -25,7 +27,7 @@ class BusinessSettingsController extends Controller
         $this->middleware(['permission:order_configuration'])->only('order_configuration');
         $this->middleware(['permission:file_system_&_cache_configuration'])->only('file_system');
         $this->middleware(['permission:social_media_logins'])->only('social_login');
-        $this->middleware(['permission:facebook_chat'])->only('facebook_chat');
+        $this->middleware(['permission:whatsapp_chat'])->only('whatsappChat');
         $this->middleware(['permission:facebook_comment'])->only('facebook_comment');
         $this->middleware(['permission:analytics_tools_configuration'])->only('google_analytics');
         $this->middleware(['permission:google_recaptcha_configuration'])->only('google_recaptcha');
@@ -90,11 +92,11 @@ class BusinessSettingsController extends Controller
         return view('backend.setup_configurations.google_configuration.google_firebase');
     }
 
-    public function facebook_chat(Request $request)
+    public function whatsappChat(Request $request)
     {
         CoreComponentRepository::instantiateShopRepository();
         CoreComponentRepository::initializeCache();
-        return view('backend.setup_configurations.facebook_chat');
+        return view('backend.setup_configurations.whatsapp_chat');
     }
 
     public function facebook_comment(Request $request)
@@ -246,15 +248,15 @@ class BusinessSettingsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function facebook_chat_update(Request $request)
+    public function whatsappChatUpdate(Request $request)
     {
         foreach ($request->types as $key => $type) {
             $this->overWriteEnvFile($type, $request[$type]);
         }
 
-        $business_settings = BusinessSetting::where('type', 'facebook_chat')->first();
+        $business_settings = BusinessSetting::where('type', 'whatsapp_chat')->first();
 
-        if ($request->has('facebook_chat')) {
+        if ($request->has('whatsapp_chat')) {
             $business_settings->value = 1;
             $business_settings->save();
         } else {
@@ -527,38 +529,70 @@ class BusinessSettingsController extends Controller
         return view('backend.setup_configurations.order_configuration.index');
     }
 
+    // public function import_data(Request $request)
+    // {
+    //     if (env("DEMO_MODE") == "On"){
+    //         flash(translate('Demo data import will not work in demo site'))->error();
+    //         return back();
+    //     }
+    //     $url = 'https://demo.activeitzone.com/envato/ecommerce-demo-data-import/import';
+    //     $header = array(
+    //         'Content-Type:application/json'
+    //     );
+    //     $data['main_url'] = $request->main_url;
+    //     $data['domain'] = $request->domain;
+    //     $data['purchase_key'] = $request->purchase_key;
+    //     $data['layout'] = $request->layout;
+    //     $request_data_json = json_encode($data);
+
+    //     $ch = curl_init();
+    //     curl_setopt($ch, CURLOPT_URL, $url);
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    //     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_POSTFIELDS, $request_data_json);
+    //     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    //     curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+    //     $raw_file_data = curl_exec($ch);
+
+    //     if(json_decode($raw_file_data, true)['status']) {
+    //         flash(translate('Demo data uploaded successfully'))->success();
+    //     } else {
+    //         flash(translate(json_decode($raw_file_data, true)['message']))->error();
+    //     }
+
+    //     return back();
+    // }
+
+
     public function import_data(Request $request)
     {
         if (env("DEMO_MODE") == "On"){
             flash(translate('Demo data import will not work in demo site'))->error();
             return back();
         }
-        $url = 'https://activeitzone.com/ecommerce-demo-data-import/import';
-        $header = array(
-            'Content-Type:application/json'
-        );
-        $data['main_url'] = $request->main_url;
-        $data['domain'] = $request->domain;
-        $data['purchase_key'] = $request->purchase_key;
-        $data['layout'] = $request->layout;
-        $request_data_json = json_encode($data);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_data_json);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        $raw_file_data = curl_exec($ch);
+        if (! AddonController::isLocalhostDomain()) {
+                   
+        $check_domain_verification =  AddonController::checkVerification('item',$request->purchase_key);
+        $check_domain_activation =  AddonController::checkActivation('item',$request->purchase_key);
 
-        if(json_decode($raw_file_data, true)['status']) {
-            flash(translate('Demo data uploaded successfully'))->success();
-        } else {
-            flash(translate(json_decode($raw_file_data, true)['message']))->error();
+            if (!$check_domain_verification || !$check_domain_activation) {
+                return translate('Please activate your domain at first');
+            }
         }
+     
+        // import sql
+        $sql_path = base_path('public/demo.sql');
+        DB::unprepared(file_get_contents($sql_path));
 
-        return back();
+        // extract images
+        $zip = new ZipArchive;
+        $zip->open(base_path('public/uploads.zip'));
+        $zip->extractTo('public/uploads/all/');
+        flash(translate('Demo data uploaded successfully'))->success();
+        return redirect()->back();
+
     }
+
 }

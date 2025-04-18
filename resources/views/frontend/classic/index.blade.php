@@ -84,15 +84,17 @@
                 <div class="row gutters-5 gutters-md-16">
                     <!-- Flash Deals Baner & Countdown -->
                     <div class="flash-deals-baner col-xxl-4 col-lg-5 col-6 h-200px h-md-400px h-lg-475px">
-                        <div class="h-100 w-100 w-xl-auto"
-                            style="background-image: url('{{ uploaded_asset($flash_deal->banner) }}'); background-size: cover; background-position: center center;">
-                            <div class="py-5 px-md-3 px-xl-5 d-none d-md-block">
-                                <div class="bg-white">
-                                    <div class="aiz-count-down-circle"
-                                        end-date="{{ date('Y/m/d H:i:s', $flash_deal->end_date) }}"></div>
+                        <a href="{{ route('flash-deal-details', $flash_deal->slug) }}">
+                            <div class="h-100 w-100 w-xl-auto"
+                                style="background-image: url('{{ uploaded_asset($flash_deal->banner) }}'); background-size: cover; background-position: center center;">
+                                <div class="py-5 px-md-3 px-xl-5 d-none d-md-block">
+                                    <div class="bg-white">
+                                        <div class="aiz-count-down-circle"
+                                            end-date="{{ date('Y/m/d H:i:s', $flash_deal->end_date) }}"></div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     <!-- Flash Deals Products -->
                     <div class="col-xxl-8 col-lg-7 col-6">
@@ -243,6 +245,48 @@
     <div id="section_featured">
 
     </div>
+
+
+    @if (addon_is_activated('preorder'))
+
+        <!-- Preorder Banner 1 -->
+        @php $homepreorder_banner_1Images = get_setting('home_preorder_banner_1_images', null, $lang);   @endphp
+        @if ($homepreorder_banner_1Images != null)
+            <div class="mb-2 mb-md-3 mt-2 mt-md-3">
+                <div class="container">
+                    @php
+                        $banner_2_imags = json_decode($homepreorder_banner_1Images);
+                        $data_md = count($banner_2_imags) >= 2 ? 2 : 1;
+                        $home_preorder_banner_1_links = get_setting('home_preorder_banner_1_links', null, $lang);
+                    @endphp
+                    <div class="aiz-carousel gutters-16 overflow-hidden arrow-inactive-none arrow-dark arrow-x-15"
+                        data-items="{{ count($banner_2_imags) }}" data-xxl-items="{{ count($banner_2_imags) }}"
+                        data-xl-items="{{ count($banner_2_imags) }}" data-lg-items="{{ $data_md }}"
+                        data-md-items="{{ $data_md }}" data-sm-items="1" data-xs-items="1" data-arrows="true"
+                        data-dots="false">
+                        @foreach ($banner_2_imags as $key => $value)
+                            <div class="carousel-box overflow-hidden hov-scale-img">
+                                <a href="{{ isset(json_decode($home_preorder_banner_1_links, true)[$key]) ? json_decode($home_preorder_banner_1_links, true)[$key] : '' }}"
+                                    class="d-block text-reset overflow-hidden">
+                                    <img src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
+                                        data-src="{{ uploaded_asset($value) }}" alt="{{ env('APP_NAME') }} promo"
+                                        class="img-fluid lazyload w-100 has-transition"
+                                        onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';">
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
+
+
+    <!-- Featured Preorder Products -->
+    <div id="section_featured_preorder_products">
+
+    </div>
+    @endif
+
 
     <!-- Banner Section 2 -->
     @php $homeBanner2Images = get_setting('home_banner2_images', null, $lang);   @endphp
@@ -404,6 +448,11 @@
     <div id="section_home_categories" class="mb-2 mb-md-3 mt-2 mt-md-3">
 
     </div>
+
+    @if (addon_is_activated('preorder'))
+        <!-- Newest Preorder Products -->
+        @include('preorder.frontend.home_page.newest_preorder')
+    @endif
 
     <!-- Classified Product -->
     @if (get_setting('classified_product') == 1)
@@ -625,7 +674,7 @@
                             <div
                                 class="col text-center border-right border-bottom hov-scale-img has-transition hov-shadow-out z-1">
                                 <a href="{{ route('products.brand', $brand->slug) }}" class="d-block p-sm-3">
-                                    <img src="{{ isset($brand->brandLogo->file_name) ? my_asset($brand->brandLogo->file_name) : static_asset('assets/img/placeholder.jpg') }}"
+                                    <img src="{{ $brand->logo != null ? uploaded_asset($brand->logo) : static_asset('assets/img/placeholder.jpg') }}"
                                         class="lazyload h-100 h-md-100px mx-auto has-transition p-2 p-sm-4 mw-100"
                                         alt="{{ $brand->getTranslation('name') }}"
                                         onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">

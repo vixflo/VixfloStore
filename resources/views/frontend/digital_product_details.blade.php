@@ -90,7 +90,7 @@
                                         <div class="col-12">
                                             @php
                                                 $total = 0;
-                                                $total += $detailedProduct->reviews->count();
+                                                $total += $detailedProduct->reviews->where('status', 1)->count();
                                             @endphp
                                             <span class="rating rating-mr-2">
                                                 {{ renderStarRating($detailedProduct->rating) }}
@@ -588,7 +588,7 @@
                             <div class="tab-pane fade" id="tab_default_4">
                                 <div class="py-5">
                                     <ul class="list-group list-group-flush">
-                                        @foreach ($detailedProduct->reviews as $key => $review)
+                                        @foreach ($detailedProduct->reviews->where('status', 1) as $key => $review)
                                             @if ($review->user != null)
                                                 <li class="media list-group-item d-flex">
                                                     <span class="avatar avatar-md mr-3">
@@ -623,7 +623,7 @@
                                         @endforeach
                                     </ul>
 
-                                    @if (count($detailedProduct->reviews) <= 0)
+                                    @if (count($detailedProduct->reviews->where('status', 1)) <= 0)
                                         <div class="text-center fs-18 opacity-70">
                                             {{ translate('There have been no reviews for this product yet.') }}
                                         </div>
@@ -690,7 +690,8 @@
                             @guest
                                 <p class="fs-14 fw-400 mb-0 px-4 mt-3"><a
                                         href="{{ route('user.login') }}">{{ translate('Login') }}</a> or <a class="mr-1"
-                                        href="{{ route('user.registration') }}">{{ translate('Register ') }}</a>{{ translate(' to submit your questions to seller') }}
+                                        href="{{ route(get_setting('customer_registration_verify') === '1' ? 'registration.verification' : 'user.registration') }}">{{ translate('Register ') }}</a>{{ translate(' to submit your questions to seller') }}
+                                        {{-- href="{{ route('user.registration') }}">{{ translate('Register ') }}</a>{{ translate(' to submit your questions to seller') }} --}}
                                 </p>
                             @endguest
 
@@ -872,7 +873,8 @@
 
                         <div class="text-center mb-3">
                             <p class="text-muted mb-0">{{ translate('Dont have an account?')}}</p>
-                            <a href="{{ route('user.registration') }}">{{ translate('Register Now')}}</a>
+                            <a href="{{ route('registration.verification') }}">{{ translate('Register Now')}}</a>
+                            {{-- <a href="{{ route('user.registration') }}">{{ translate('Register Now')}}</a> --}}
                         </div>
                         @if(get_setting('google_login') == 1 ||
                             get_setting('facebook_login') == 1 ||

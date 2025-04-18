@@ -10,7 +10,7 @@
             <div class="col-12">
                 @php
                     $total = 0;
-                    $total += $detailedProduct->reviews->count();
+                    $total += $detailedProduct->reviews->where('status', 1)->count();
                 @endphp
                 <span class="rating rating-mr-2">
                     {{ renderStarRating($detailedProduct->rating) }}
@@ -84,6 +84,24 @@
             <span class="text-secondary fs-14 fw-400 mr-4 w-80px">{{ translate('Brand') }}</span><br>
             <a href="{{ route('products.brand', $detailedProduct->brand->slug) }}"
                 class="text-reset hov-text-primary fs-14 fw-700">{{ $detailedProduct->brand->name }}</a>
+        </div>
+    @endif
+
+    {{-- Warranty --}}
+    @if ($detailedProduct->has_warranty == 1 && $detailedProduct->warranty_id != null)
+        <div class="d-flex flex-wrap align-items-center mb-3">
+            <span class="text-secondary fs-14 fw-400 mr-4 w-80px">{{ translate('Warranty') }}</span><br>
+            <img src="{{ uploaded_asset($detailedProduct->warranty->logo) }}" height="40">
+            <span class="border border-secondary-base btn fs-12 ml-3 px-3 py-1 rounded-1 text-secondary">
+                {{ $detailedProduct->warranty->getTranslation('text')}}
+                @if($detailedProduct->warranty_note_id != null)
+                    <span href="javascript:void(1);" 
+                        data-toggle="modal" data-target="#warranty-note-modal"
+                        class="border-bottom border-bottom-4 ml-2 text-secondary-base">
+                        {{ translate('View Details') }}
+                    </span>
+                @endif
+            </span>
         </div>
     @endif
 
@@ -554,8 +572,16 @@
                                 <img src="{{ static_asset('assets/img/refund-sticker.jpg') }}" height="36">
                             @endif
                         </a>
-                        <a href="{{ route('returnpolicy') }}" class="text-blue hov-text-primary fs-14 ml-3"
-                            target="_blank">{{ translate('View Policy') }}</a>
+                        @if($detailedProduct->refund_note_id != null)
+                            <span href="javascript:void(1);" 
+                                data-toggle="modal" data-target="#refund-note-modal"
+                                class="border-bottom border-bottom-4 ml-2 text-secondary-base">
+                                {{ translate('Refund Note') }}
+                            </span>
+                        @endif
+                        
+                        <a href="{{ route('returnpolicy') }}" class="text-blue hov-text-primary fs-14 ml-3" target="_blank">{{ translate('View Policy') }}</a>
+                        
                     @else
                         <div class="text-dark fs-14 fw-400 mt-2">{{ translate('Not Applicable') }}</div>
                     @endif

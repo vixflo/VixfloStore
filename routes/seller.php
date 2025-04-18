@@ -62,6 +62,13 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
         Route::get('/digitalproducts/download/{id}', 'download')->name('digitalproducts.download');
     });
 
+    // Note
+    Route::resource('note', NoteController::class);
+    Route::controller(NoteController::class)->group(function () {
+        Route::get('/note/edit/{id}', 'edit')->name('note.edit');
+        Route::get('note/delete/{note}', 'destroy')->name('note.delete');
+    });
+
     //Coupon
     Route::resource('coupon', CouponController::class);
     Route::controller(CouponController::class)->group(function () {
@@ -83,17 +90,19 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
     Route::controller(InvoiceController::class)->group(function () {
         Route::get('/invoice/{order_id}', 'invoice_download')->name('invoice.download');
     });
-    // Route::get('invoice/{order_id}',[InvoiceController::class, 'invoice_download'])->name('invoice.download');
+    
     //Review
     Route::controller(ReviewController::class)->group(function () {
-        Route::get('/reviews', 'index')->name('reviews');
+        Route::get('/product-reviews', 'index')->name('product-reviews');
+        Route::get('/product/detail-reviews/{id}', 'detailReviews')->name('detail-reviews');
+        
     });
-    // Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews');
 
     //Shop
     Route::controller(ShopController::class)->group(function () {
         Route::get('/shop', 'index')->name('shop.index');
         Route::post('/shop/update', 'update')->name('shop.update');
+        Route::post('/shop/banner-update', 'bannerUpdate')->name('shop.banner.update');
         Route::get('/shop/apply-for-verification', 'verify_form')->name('shop.verify');
         Route::post('/shop/verification_info_store', 'verify_form_store')->name('shop.verify.store');
     });
